@@ -1,0 +1,8 @@
+.deps/
+Makefile
+cciss_vol_status
+cciss_vol_status.o
+config.h
+config.log
+config.status
+stamp-h1
