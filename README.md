@@ -1,4 +1,4 @@
-# hpsa_vol_status
+# cciss_vol_status
 
 cciss_vol_status is a linux/FreeBSD utility to quickly show the status of logical drives on HP's line of Smart Array RAID controllers. It should work with both the hpsa and cciss drivers, as well as with the HP proprietary hpvsa software RAID driver.
 
