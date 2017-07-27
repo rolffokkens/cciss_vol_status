@@ -139,12 +139,15 @@ struct smartarray_id_t {
 	{ 0x3223103C, "Smart Array P800",	0, 1},
 	{ 0x3237103c, "Smart Array E500",	0, 1},
 	{ 0x323D103C, "Smart Array P700m",	0, 1},
-	/* start of hpsa list */
 	{ 0x3241103C, "Smart Array P212",	0, 1},
 	{ 0x3243103C, "Smart Array P410",	0, 1},
 	{ 0x3245103C, "Smart Array P410i",	0, 1},
 	{ 0x3247103C, "Smart Array P411",	0, 1},
 	{ 0x3249103C, "Smart Array P812",	0, 1},
+	{ 0xe0110e11, "HP MSA500",		1, 0}, /* aka Smart Array CL */
+	{ 0xe0200e11, "HP MSA500 G2",		1, 0},
+	{ 0xe0300e11, "HP MSA20",		1, 0},
+	{ 0x3118103c, "HP B110i",		0, 1},
 	{ 0x324A103C, "Smart Array P712m", 0, 1},
 	{ 0x324B103C, "Smart Array P711m", 0, 1},
 	{ 0x3350103C, "Smart Array P222", 0, 1},
@@ -164,39 +167,27 @@ struct smartarray_id_t {
 	{ 0x1928103C, "Smart Array P230i", 0, 1},
 	{ 0x1929103C, "Smart Array P530", 0, 1},
 	{ 0x192A103C, "Smart Array P531", 0, 1},
-	{ 0x21BD103C, "Smart Array P244br", 0, 1},
-	{ 0x21BE103C, "Smart Array P741m", 0, 1},
-	{ 0x21BF103C, "Smart HBA H240ar", 0, 1},
-	{ 0x21C0103C, "Smart Array P440ar", 0, 1},
-	{ 0x21C1103C, "Smart Array P840ar", 0, 1},
-	{ 0x21C2103C, "Smart Array P440", 0, 1},
-	{ 0x21C3103C, "Smart Array P441", 0, 1},
-	{ 0x21C4103C, "Smart Array", 0, 1},
-	{ 0x21C5103C, "Smart Array P841", 0, 1},
-	{ 0x21C6103C, "Smart HBA H244br", 0, 1},
-	{ 0x21C7103C, "Smart HBA H240", 0, 1},
-	{ 0x21C8103C, "Smart HBA H241", 0, 1},
-	{ 0x21C9103C, "Smart Array", 0, 1},
-	{ 0x21CA103C, "Smart Array P246br", 0, 1},
-	{ 0x21CB103C, "Smart Array P840", 0, 1},
-	{ 0x21CC103C, "Smart Array", 0, 1},
-	{ 0x21CD103C, "Smart Array", 0, 1},
-	{ 0x21CE103C, "Smart HBA", 0, 1},
-	{ 0x00761590, "HP Storage P1224 Array Controller", 0, 1}, /* VID = 3PAR */
-	{ 0x00871590, "HP Storage P1224e Array Controller", 0, 1},
-	{ 0x007D1590, "HP Storage P1228 Array Controller", 0, 1},
-	{ 0x00881590, "HP Storage P1228e Array Controller", 0, 1},
-	{ 0x333f103c, "HP StorageWorks 1210m Array Controller", 0, 1},
-	/* end of hpsa list */
-	{ 0xe0110e11, "HP MSA500",		1, 0}, /* aka Smart Array CL */
-	{ 0xe0200e11, "HP MSA500 G2",		1, 0},
-	{ 0xe0300e11, "HP MSA20",		1, 0},
-	{ 0x3118103c, "HP B110i",		0, 1},
+	{ 0x334D103C, "Smart Array P822se", 0, 1},
 	{ 0x00451590, "Dynamic Smart Array B320i", 0, 1},
 	{ 0x00471590, "Dynamic Smart Array B320i", 0, 1}, 
 	{ 0x00481590, "Dynamic Smart Array B120i", 0, 1},
 	{ 0x006C1590, "Dynamic Smart Array B120i", 0, 1},
 	{ 0x00841590, "Dynamic Smart Array B120i", 0, 1},
+	{ 0x21BD103C, "Smart Array P244br", 0, 1},
+	{ 0x21BE103C, "Smart Array P741m", 0, 1},
+	{ 0x21BF103C, "Smart HBA H240ar", 0, 1},
+	{ 0x21C0103C, "Smart Array P440ar", 0, 1},
+	{ 0x21C2103C, "Smart Array P440", 0, 1},
+	{ 0x21C3103C, "Smart Array P441", 0, 1},
+	{ 0x21C5103C, "Smart Array P841", 0, 1},
+	{ 0x21C6103C, "Smart HBA H244br", 0, 1},
+	{ 0x21C7103C, "Smart HBA H240", 0, 1},
+	{ 0x21C8103C, "Smart HBA H241", 0, 1},
+	{ 0x21CA103C, "Smart Array P246br", 0, 1},
+	{ 0x21CB103C, "Smart Array P840", 0, 1},
+	{ 0x21CC103C, "Smart Array P542t", 0, 1},
+	{ 0x21CD103C, "Smart Array P240tr", 0, 1},
+	{ 0x21CE103C, "Smart HBA H240tr", 0, 1},
 
 
 #ifdef HAVE_SCSI_SG_H
@@ -1112,6 +1103,8 @@ static void print_volume_status(char *file, int fd, int ctlrtype,
 		case 3: sprintf(raid_level, "RAID 5");
 			break;
 		case 5: sprintf(raid_level, "RAID 6");
+			break;
+		case 6: sprintf(raid_level, "RAID 1 ADM");
 			break;
 		default: /* mysteriously we don't know (shouldn't get here.) */
 			sprintf(raid_level, "(Unknown RAID level (tolerance_type = %d)",
@@ -2297,6 +2290,8 @@ static void check_one_nonvolatile_cache_status(char *file, int ctlrtype,
 	if (cache_config->disable_flag)
 		return;
 
+	printf("%35s: %hu MiB\n", "Total cache memory", cache_config->total_memory_size);
+	printf("%35s: %d% Read / %d% Write\n", "Cache Ratio", cache_config->percent_read_cache, cache_config->percent_write_cache);
 	printf("%35s: %hu MiB\n", "Read cache memory", cache_config->mem_for_read_cache);
 	printf("%35s: %hu MiB\n", "Write cache memory", cache_config->mem_for_write_cache);
 	printf("%35s: %s\n", "Write cache enabled",
@@ -2466,11 +2461,13 @@ static void cciss_logical_drive_status(char *file, int fd,
 				volume_number);
 	}
 	scsi_device_node = file;
+#ifdef HAVE_SCSI_SG_H
 	if (is_scsi)
 		find_scsi_device_node(cciss_to_bmic.addr[volume_number].bmic_id_ctlr_data,
 			&scsi_device_node);
 	else
 		scsi_device_node = file;
+#endif
 	print_volume_status(scsi_device_node, fd, ctlrtype,
 		cciss_to_bmic.addr[volume_number].controller_lun,
 		volume_number, &ldstatus, id,
