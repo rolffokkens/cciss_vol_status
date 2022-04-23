@@ -189,6 +189,7 @@ struct smartarray_id_t {
 	{ 0x21CD103C, "Smart Array P240tr", 0, 1},
 	{ 0x21CE103C, "Smart HBA H240tr", 0, 1},
 	{ 0x1100103C, "Smart Array P816i-a", 0, 1},
+	{ 0x0602103c, 'HPE Smart Array p408i-a sr gen10', 0, 1},
 
 
 #ifdef HAVE_SCSI_SG_H
